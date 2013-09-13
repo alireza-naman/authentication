@@ -15,7 +15,7 @@ class Authentication {
 
 
 	/**
-	 * Return current users IP address
+	 * Initialise the library
 	 *
 	 * @return	void
 	 */
@@ -52,11 +52,57 @@ class Authentication {
 	protected function fingerprint() {
 
 		// Initialise the fingerprint with a static salt
-		$fingerprint = md5($config->secret_key);
+		$fingerprint = md5($this->config->secret_key);
 		$fingerprint .= $_SERVER['HTTP_USER_AGENT'];
 		$fingerprint .= $this->ip();
 
 		return sha1($fingerprint);
+
+	}
+
+
+	/**
+	 * Flush permissions cache
+	 *
+	 * @return	void
+	 */
+	public function flush_permissions() {
+
+		Cache::delete('user_permissions');
+
+	}
+
+
+	/**
+	 * Read permissions
+	 *
+	 * @return	array|boolean
+	 */
+	public function read_permissions() {
+
+		// Fetch cached copy of permissions and return
+		if ($permissions = Cache::fetch('user_permissions')) return $permissions;
+
+		// Define an empty array for the permissions
+		$permissions = array();
+
+		// Select permissions - on error return false
+		if ( ! $stmt = Database::instance()->prepare('select `id`, `key`, `title` from `user_permission` order by `id` asc')) return false;
+		$stmt->execute();
+		$stmt->bind_result($id, $key, $title);
+		while($stmt->fetch()) {
+			$permissions[] = (object) array(
+				'id' => $id,
+				'key' => $key,
+				'title' => $title
+			);
+		}
+		$stmt->close();
+
+		// Cache permissions
+		Cache::store('user_permissions', $permissions);
+
+		return $permissions;
 
 	}
 

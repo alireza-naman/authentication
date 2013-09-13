@@ -21,6 +21,28 @@ Joelvardy\Config::value('authentication', (object) array(
 ));
 ```
 
-Developed by [Joel Vardy][joelvardy].
+### Caching
+
+The library uses this [caching library][cache], you can define a memcached server to use, however if you don't the library will query the database when required.
+
+### Tables
+
+#### Permissions
+
+The permissions table holds each possible permission, create the table with the SQL below:
+
+```sql
+CREATE TABLE `user_permission` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`key` varchar(128) NOT NULL,
+	`title` varchar(128) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+```
+
+You must manually add rows to the table, if caching is running you can clear the related keys with the `flush_permissions()` method.
+
+Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibilty for any damage caused by this library.
 
   [joelvardy]: https://joelvardy.com/
+  [cache]: https://github.com/joelvardy/cache

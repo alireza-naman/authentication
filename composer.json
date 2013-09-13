@@ -15,7 +15,9 @@
 	],
 	"require": {
 		"php": ">=5.0.0",
-		"joelvardy/config": "dev-master"
+		"joelvardy/config": "dev-master",
+		"joelvardy/cache": "dev-master",
+		"joelvardy/database": "dev-master"
 	},
 	"autoload": {
 		"psr-0": {
