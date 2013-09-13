@@ -1,0 +1,24 @@
+{
+	"name": "joelvardy/authentication",
+	"type": "library",
+	"description": "Authentication library.",
+	"keywords": ["auth","authentication","acl","user","permissions"],
+	"homepage": "https://github.com/joelvardy/authentication",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Joel Vardy",
+			"email": "info@joelvardy.com",
+			"homepage": "https://joelvardy.com",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.0.0"
+	},
+	"autoload": {
+		"psr-0": {
+			"Joelvardy": "src"
+		}
+	}
+}
