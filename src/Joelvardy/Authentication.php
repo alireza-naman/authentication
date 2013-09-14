@@ -86,7 +86,7 @@ class Authentication {
 		// Define an empty array for the permissions
 		$permissions = array();
 
-		// Select permissions - on error return false
+		// Select permissions
 		if ( ! $stmt = Database::instance()->prepare('select `id`, `key`, `title` from `user_permission` order by `id` asc')) return false;
 		$stmt->execute();
 		$stmt->bind_result($id, $key, $title);
