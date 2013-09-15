@@ -14,9 +14,10 @@ The table below details the available configuration options:
 | user_table      | *[optional]* Set a custom user table name, default: user
 | username_field  | *[optional]* Set a custom username field name, default: username
 | password_field  | *[optional]* Set a custom password field name, default: password
-| password_cost   | *[optional]* The strength of the password hash, must be within the range 04-31
+| password_cost   | *[optional]* Strength of the password hash, within the range 04 - 31 default: 16
+| session_name   | *[optional]* The name of the user session, default: `jv_authentication`
 
-Define these options as shown below:
+You should define these options as shown below:
 
 ```php
 // Define authentication details
@@ -27,7 +28,7 @@ Joelvardy\Config::value('authentication', (object) array(
 
 ### Caching
 
-The library uses this [caching library][cache], although you don't have to use it, you can define a memcached server to use, or if you don't the library will simpily query the database when required.
+The library uses this [caching library][cache], although you don't have to use it, you can define a memcached server to use, or if you don't the library will simply query the database when required.
 
 ### Tables
 
@@ -114,7 +115,7 @@ if ( ! $user_id) {
 }
 ```
 
-### Change Password
+### Changing a Password
 
 The example below shows how to change a password:
 
@@ -128,11 +129,11 @@ if ($auth->change_password($user_id, $password)) {
 
 When you call this method the `updated` field in the user table will be updated.
 
-### Change Group
+### Changing the Group
 
 If you want to change the group a user belongs to you can use the `change_group($user_id, $group_id)` method. When you call this the `updated` field in the user table will also be updated.
 
-### Login
+### Logging In
 
 An example showing how to log a user in is show below:
 
@@ -144,15 +145,13 @@ if ($auth->login($username, $password)) {
 }
 ```
 
-*You should probably implement some bruteforce protection, for example, if a user enters the password wrong four times, they are locked out for 10 minutes.*
+*You should probably implement some brute force protection, for example, if a user enters the password wrong four times, they are locked out for 10 minutes.*
 
-### Log In/Out
+### Are You Logged In?
 
 To check a user is logged in just run `$auth->logged_in()` it will return either true or false.
 
-To log the current user out just run: `$auth->logout()`
-
-### Check User Permissions
+### Checking User Permissions
 
 You can easily check whether a user has a permission listed in the `user_permission` table, the example below shows this:
 
@@ -164,7 +163,11 @@ if ($auth->permission('moderate-comments')) {
 }
 ```
 
-Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibilty for any damage caused by this library.
+### Logging Out
+
+To log the current user out just run: `$auth->logout()`
+
+Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibility for any damage caused by this library.
 
   [joelvardy]: https://joelvardy.com/
   [cache]: https://github.com/joelvardy/cache
