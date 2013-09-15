@@ -67,6 +67,25 @@ CREATE TABLE `user_group_permission` (
 
 There are no methods to add rows to these tables, it must be done manually. If caching is running you should run the `flush_permissions()` method to clear the cache.
 
+#### User
+
+The user table must contain the fields below, however you may add other fields (such as name and biography) which you can access through your own models.
+
+The authentication library uses a username to distinguish users, however this username could be an email address.
+
+```sql
+CREATE TABLE `user` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`group_id` int NOT NULL,
+	`created` int NOT NULL,
+	`updated` int NOT NULL,
+	`username` varchar(128) NOT NULL,
+	`password` varchar(128) NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT fk_user_group FOREIGN KEY (group_id) REFERENCES user_group(id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+```
+
 Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibilty for any damage caused by this library.
 
   [joelvardy]: https://joelvardy.com/

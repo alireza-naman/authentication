@@ -111,13 +111,17 @@ class Authentication {
 	/**
 	 * Read user groups
 	 *
+	 * @param	integer [$return_group_id] A group ID to return
 	 * @return	array|boolean
 	 */
 	public function read_groups($return_group_id = null) {
 
 		// Fetch cached copy of groups and return
 		if ($groups = Cache::fetch('user_groups')) {
-			return ($return_group_id ? $groups[$return_group_id] : $groups);
+			if ($return_group_id) {
+				return (isset($groups[$return_group_id]) ? $groups[$return_group_id] : false);
+			}
+			return $groups;
 		}
 
 		// Define an empty array for the groups
@@ -151,7 +155,35 @@ class Authentication {
 		// Cache groups
 		Cache::store('user_groups', $groups);
 
-		return ($return_group_id ? $groups[$return_group_id] : $groups);
+		if ($return_group_id) {
+			return (isset($groups[$return_group_id]) ? $groups[$return_group_id] : false);
+		}
+		return $groups;
+
+	}
+
+
+	/**
+	 * Is the username available
+	 *
+	 * @param	string [$username] The username to check against
+	 * @return	boolean
+	 */
+	public function username_available($username) {
+
+		if ( ! $stmt = Database::instance()->prepare('select `id` from `user` where `username` = ?')) return false;
+		$stmt->bind_param('s', $username);
+		$stmt->execute();
+		$stmt->bind_result($id);
+		// There is already a user with this username
+		if ($stmt->fetch()) {
+			$stmt->close();
+			return false;
+		// No user was found
+		} else {
+			$stmt->close();
+			return true;
+		}
 
 	}
 
