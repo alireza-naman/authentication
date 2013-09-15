@@ -14,6 +14,7 @@ The table below details the available configuration options:
 | user_table      | *[optional]* Set a custom user table name, default: user
 | username_field  | *[optional]* Set a custom username field name, default: username
 | password_field  | *[optional]* Set a custom password field name, default: password
+| password_cost   | *[optional]* The strength of the password hash, must be within the range 04-31
 
 Define these options as shown below:
 
@@ -81,7 +82,7 @@ You must have a table which contains the following fields:
  * username field (string)
  * password field (string)
 
-You can use the configuration options to change the name of the table and the username and password fields. However the table may have other fields (such as name and biography) which you can access through your own models.
+You can use the configuration options to change the name of the table and the username and password fields. The table may have other fields (such as name and biography) which you can access through your own models, but these must allow null entries.
 
 SQL to create a table which will work *out of the box* is shown below:
 

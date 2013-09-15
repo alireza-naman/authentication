@@ -25,7 +25,8 @@ class Authentication {
 		$this->config = (object) array_merge(array(
 			'user_table' => 'user',
 			'username_field' => 'username',
-			'password_field' => 'password'
+			'password_field' => 'password',
+			'password_cost' => 16
 		), (array) clone Config::value('authentication'));
 
 		// Ensure a secret key has been set
@@ -195,15 +196,12 @@ class Authentication {
 	/**
 	 * Generate salt
 	 *
-	 * @access	protected
-	 * @param	integer [$cost] The strength of the resulting hash, must be within the range 04-31
 	 * @return	string
 	 */
-	protected function generate_salt($cost = 16)
-	{
+	protected function generate_salt() {
 
 		// We are using blowfish, so this must be set at the beginning of the salt
-		$salt = '$2a$'.$cost.'$';
+		$salt = '$2a$'.$this->config->password_cost.'$';
 
 		// Generate a random string based on time
 		$salt .= substr(str_replace('+', '.', base64_encode(sha1(microtime(TRUE), TRUE))), 0, 22);
@@ -214,18 +212,55 @@ class Authentication {
 
 
 	/**
-	 * Generate a hash
+	 * Generate hash
 	 *
-	 * @access	protected
 	 * @param	string [$password] The password for which the hash should be generated for
-	 * @param	string [$salt] The salt can either be the one returned from the generate_salt method or the current password
-	 * @return	string The generated hash
+	 * @param	string [$salt] The salt should be the current password, if none is provided one will be generated
+	 * @return	string
 	 */
-	protected function generate_hash($password, $salt)
-	{
+	protected function generate_hash($password, $salt = null) {
+
+		// Generate salt
+		if ( ! $salt) {
+			$salt = $this->generate_salt();
+		}
 
 		// Hash the generated details with a salt to form a secure password hash
 		return crypt($password, $salt);
+
+	}
+
+
+	/**
+	 * Create user
+	 *
+	 * @param	string [$username] The username of the user to be created
+	 * @param	string [$password] The users password
+	 * @param	integer [$group_id] The ID of the group in which the user will belong
+	 * @return	integer|boolean
+	 */
+	public function create_user($username, $password, $group_id) {
+
+		// Ensure username is available
+		if ( ! $this->username_available($username)) return false;
+
+		// Generate hash
+		$password = $this->generate_hash($password);
+
+		// Add group permission - on error return false
+		if ( ! $stmt = Database::instance()->prepare("insert into {$this->config->user_table}(`id`, `group_id`, `created`, `updated`, `{$this->config->username_field}`, `{$this->config->password_field}`) values (0, ?, ?, ?, ?, ?)")) return false;
+		$stmt->bind_param('iiiss', $group_id, $_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME'], $username, $password);
+		if ($stmt->execute()) {
+
+			$user_id = $stmt->insert_id;
+			$stmt->close();
+			// TODO: Flush cache
+			return $user_id;
+
+		} else {
+			$stmt->close();
+			return false;
+		}
 
 	}
 
