@@ -251,16 +251,48 @@ class Authentication {
 		if ( ! $stmt = Database::instance()->prepare("insert into {$this->config->user_table}(`id`, `group_id`, `created`, `updated`, `{$this->config->username_field}`, `{$this->config->password_field}`) values (0, ?, ?, ?, ?, ?)")) return false;
 		$stmt->bind_param('iiiss', $group_id, $_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME'], $username, $password);
 		if ($stmt->execute()) {
-
 			$user_id = $stmt->insert_id;
 			$stmt->close();
-			// TODO: Flush cache
 			return $user_id;
-
 		} else {
 			$stmt->close();
 			return false;
 		}
+
+	}
+
+
+	/**
+	 * Read user account
+	 *
+	 * @return	array|boolean
+	 */
+	public function read_user($user_id) {
+
+		// Fetch cached copy of user details and return
+		if ($user_details = Cache::fetch('user_'.$user_id)) return $user_details;
+
+		// Select permissions
+		if ( ! $stmt = Database::instance()->prepare("select `id`, `group_id`, `created`, `updated`, `{$this->config->username_field}` from {$this->config->user_table} where `id` = ?")) return false;
+		$stmt->bind_param('i', $user_id);
+		$stmt->execute();
+		$stmt->bind_result($id, $group_id, $created, $updated, $username);
+		$stmt->fetch();
+		$user_details = array(
+			'id' => $id,
+			'created' => $created,
+			'updated' => $updated,
+			$this->config->username_field => $username
+		);
+		$stmt->close();
+
+		// Read group details
+		$user_details['group'] = $this->read_groups($group_id);
+
+		// Cache user details
+		Cache::store('user_'.$user_id, $user_details);
+
+		return $user_details;
 
 	}
 

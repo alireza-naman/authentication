@@ -99,6 +99,21 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
+### Creating a User
+
+Before you create a user you should check the username is available using the `username_available($username)` method.
+
+The `create_user()` method will return false if the username has already been taken. The method takes three parameters; username, password and the user's group ID. Below is an example:
+
+```php
+$auth = new Joelvardy\Authentication();
+
+$user_id = $auth->create_user($username, $password, MEMBER_GROUP_ID);
+if ( ! $user_id) {
+	// Some error has occurred
+}
+```
+
 Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibilty for any damage caused by this library.
 
   [joelvardy]: https://joelvardy.com/
