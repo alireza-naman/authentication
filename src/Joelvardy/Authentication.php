@@ -180,15 +180,7 @@ class Authentication {
 		$stmt->bind_param('s', $username);
 		$stmt->execute();
 		$stmt->bind_result($id);
-		// There is already a user with this username
-		if ($stmt->fetch()) {
-			$stmt->close();
-			return false;
-		// No user was found
-		} else {
-			$stmt->close();
-			return true;
-		}
+		return ! $stmt->fetch();
 
 	}
 
@@ -247,7 +239,7 @@ class Authentication {
 		// Generate hash
 		$password = $this->generate_hash($password);
 
-		// Add group permission - on error return false
+		// Add database record
 		if ( ! $stmt = Database::instance()->prepare("insert into {$this->config->user_table}(`id`, `group_id`, `created`, `updated`, `{$this->config->username_field}`, `{$this->config->password_field}`) values (0, ?, ?, ?, ?, ?)")) return false;
 		$stmt->bind_param('iiiss', $group_id, $_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME'], $username, $password);
 		if ( ! $stmt->execute()) return false;
@@ -267,7 +259,7 @@ class Authentication {
 		// Fetch cached copy of user details and return
 		if ($user_details = Cache::fetch('user_'.$user_id)) return $user_details;
 
-		// Select permissions
+		// Read details from database
 		if ( ! $stmt = Database::instance()->prepare("select `id`, `group_id`, `created`, `updated`, `{$this->config->username_field}` from {$this->config->user_table} where `id` = ?")) return false;
 		$stmt->bind_param('i', $user_id);
 		$stmt->execute();
@@ -304,7 +296,7 @@ class Authentication {
 		// Generate hash
 		$password = $this->generate_hash($password);
 
-		// Add group permission - on error return false
+		// Update database record
 		if ( ! $stmt = Database::instance()->prepare("update {$this->config->user_table} set `updated` = ?, `{$this->config->password_field}` = ? where `id` = ?")) return false;
 		$stmt->bind_param('isi', $_SERVER['REQUEST_TIME'], $password, $user_id);
 		return $stmt->execute();
