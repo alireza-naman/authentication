@@ -1,7 +1,7 @@
 {
 	"name": "joelvardy/authentication",
 	"type": "library",
-	"description": "Authentication library.",
+	"description": "Authentication library with permission based access.",
 	"keywords": ["auth","authentication","acl","user","permissions"],
 	"homepage": "https://github.com/joelvardy/authentication",
 	"license": "MIT",
