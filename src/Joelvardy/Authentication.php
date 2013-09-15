@@ -69,6 +69,7 @@ class Authentication {
 	public function flush_permissions() {
 
 		Cache::delete('user_permissions');
+		Cache::delete('user_groups');
 
 	}
 
@@ -91,7 +92,7 @@ class Authentication {
 		$stmt->execute();
 		$stmt->bind_result($id, $key, $title);
 		while($stmt->fetch()) {
-			$permissions[] = (object) array(
+			$permissions[] = array(
 				'id' => $id,
 				'key' => $key,
 				'title' => $title
@@ -103,6 +104,54 @@ class Authentication {
 		Cache::store('user_permissions', $permissions);
 
 		return $permissions;
+
+	}
+
+
+	/**
+	 * Read user groups
+	 *
+	 * @return	array|boolean
+	 */
+	public function read_groups($return_group_id = null) {
+
+		// Fetch cached copy of groups and return
+		if ($groups = Cache::fetch('user_groups')) {
+			return ($return_group_id ? $groups[$return_group_id] : $groups);
+		}
+
+		// Define an empty array for the groups
+		$groups = array();
+
+		// Select groups
+		if ( ! $stmt = Database::instance()->prepare('select user_group.id, user_group.title, user_permission.id, user_permission.key, user_permission.title from `user_group`, `user_group_permission`, `user_permission` where user_group.id = user_group_permission.group_id and user_permission.id = user_group_permission.permission_id order by user_group.id asc')) return false;
+		$stmt->execute();
+		$stmt->bind_result($group_id, $group_title, $permission_id, $permission_key, $permission_title);
+		while($stmt->fetch()) {
+			// If this is the first item define the groups variable and title
+			if ( ! isset($groups[$group_id])) {
+				$groups[$group_id] = array(
+					'title' => $group_title,
+					'permissions' => array(
+						$permission_id => array(
+							'key' => $permission_key,
+							'title' => $permission_title
+						)
+					)
+				);
+			}
+			// Add the group permissions
+			$groups[$group_id]['permissions'][$permission_id] = array(
+				'key' => $permission_key,
+				'title' => $permission_title
+			);
+		}
+		$stmt->close();
+
+		// Cache groups
+		Cache::store('user_groups', $groups);
+
+		return ($return_group_id ? $groups[$return_group_id] : $groups);
 
 	}
 
