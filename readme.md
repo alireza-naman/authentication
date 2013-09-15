@@ -144,9 +144,11 @@ if ($auth->login($username, $password)) {
 }
 ```
 
-### Logged In?
+### Log In/Out
 
 To check a user is logged in just run `$auth->logged_in()` it will return either true or false.
+
+To log the current user out just run: `$auth->logout()`
 
 you should probably implement some bruteforce protection, for example, if a user enters the password wrong four times, they are locked out for 10 minutes.
 

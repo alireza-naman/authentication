@@ -293,7 +293,7 @@ class Authentication {
 	 *
 	 * @param	integer [$user_id] The ID of the user to update
 	 * @param	string [$password] The users new password
-	 * @return	integer|boolean
+	 * @return	boolean
 	 */
 	public function change_password($user_id, $password) {
 
@@ -313,7 +313,7 @@ class Authentication {
 	 *
 	 * @param	integer [$user_id] The ID of the user to update
 	 * @param	integer [$group_id] The new user group ID
-	 * @return	integer|boolean
+	 * @return	boolean
 	 */
 	public function change_group($user_id, $group_id) {
 
@@ -330,7 +330,7 @@ class Authentication {
 	 *
 	 * @param	string [$username] Username to check against
 	 * @param	string [$password] Password to check against
-	 * @return	integer|boolean
+	 * @return	boolean
 	 */
 	public function login($username, $password) {
 
@@ -363,9 +363,12 @@ class Authentication {
 	/**
 	 * Is the current user logged in
 	 *
-	 * @return	integer|boolean
+	 * @return	boolean
 	 */
 	public function logged_in() {
+
+		// Regenerate session ID
+		@session_regenerate_id(true);
 
 		// Check the status of the session
 		if ( ! isset($_SESSION[$this->config->session_name]['status'])) return false;
@@ -374,6 +377,19 @@ class Authentication {
 		if ($_SESSION[$this->config->session_name]['fingerprint'] != $this->fingerprint()) return false;
 
 		return true;
+
+	}
+
+
+	/**
+	 * Log the current user out
+	 *
+	 * @return	void
+	 */
+	public function logout() {
+
+		// Remove the users session data
+		$_SESSION[$this->config->session_name] = null;
 
 	}
 
