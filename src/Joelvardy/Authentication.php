@@ -360,4 +360,22 @@ class Authentication {
 	}
 
 
+	/**
+	 * Is the current user logged in
+	 *
+	 * @return	integer|boolean
+	 */
+	public function logged_in() {
+
+		// Check the status of the session
+		if ( ! isset($_SESSION[$this->config->session_name]['status'])) return false;
+
+		// Check the fingerprint matches the current user
+		if ($_SESSION[$this->config->session_name]['fingerprint'] != $this->fingerprint()) return false;
+
+		return true;
+
+	}
+
+
 }
