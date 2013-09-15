@@ -11,6 +11,9 @@ The table below details the available configuration options:
 | Option          | Description
 | --------------- | -----
 | secret_key      | Used to add entropy within user fingerprint.
+| user_table      | *[optional]* Set a custom user table name, default: user
+| username_field  | *[optional]* Set a custom username field name, default: username
+| password_field  | *[optional]* Set a custom password field name, default: password
 
 Define these options as shown below:
 
@@ -69,9 +72,18 @@ There are no methods to add rows to these tables, it must be done manually. If c
 
 #### User
 
-The user table must contain the fields below, however you may add other fields (such as name and biography) which you can access through your own models.
+You must have a table which contains the following fields:
 
-The authentication library uses a username to distinguish users, however this username could be an email address.
+ * id (integer)
+ * group_id (integer)
+ * created (integer)
+ * updated (integer)
+ * username field (string)
+ * password field (string)
+
+You can use the configuration options to change the name of the table and the username and password fields. However the table may have other fields (such as name and biography) which you can access through your own models.
+
+SQL to create a table which will work *out of the box* is shown below:
 
 ```sql
 CREATE TABLE `user` (

@@ -22,7 +22,11 @@ class Authentication {
 	public function __construct() {
 
 		// Set configuration
-		$this->config = Config::value('authentication');
+		$this->config = (object) array_merge(array(
+			'user_table' => 'user',
+			'username_field' => 'username',
+			'password_field' => 'password'
+		), (array) clone Config::value('authentication'));
 
 		// Ensure a secret key has been set
 		if ( ! isset($this->config->secret_key)) throw new \Exception('You must define a secret key.');
@@ -171,7 +175,7 @@ class Authentication {
 	 */
 	public function username_available($username) {
 
-		if ( ! $stmt = Database::instance()->prepare('select `id` from `user` where `username` = ?')) return false;
+		if ( ! $stmt = Database::instance()->prepare("select `id` from {$this->config->user_table} where {$this->config->username_field} = ?")) return false;
 		$stmt->bind_param('s', $username);
 		$stmt->execute();
 		$stmt->bind_result($id);
