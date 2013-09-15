@@ -304,4 +304,21 @@ class Authentication {
 	}
 
 
+	/**
+	 * Change user group
+	 *
+	 * @param	integer [$user_id] The ID of the user to update
+	 * @param	integer [$group_id] The new user group ID
+	 * @return	integer|boolean
+	 */
+	public function change_group($user_id, $group_id) {
+
+		// Update database record
+		if ( ! $stmt = Database::instance()->prepare("update {$this->config->user_table} set `updated` = ?, `group_id` = ? where `id` = ?")) return false;
+		$stmt->bind_param('isi', $_SERVER['REQUEST_TIME'], $group_id, $user_id);
+		return $stmt->execute();
+
+	}
+
+
 }

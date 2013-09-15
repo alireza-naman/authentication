@@ -126,6 +126,12 @@ if ($auth->change_password($user_id, $password)) {
 }
 ```
 
+When you call this method the `updated` field in the user table will be updated.
+
+### Change Group
+
+If you want to change the group a user belongs to you can use the `change_group($user_id, $group_id)` method. When you call this the `updated` field in the user table will also be updated.
+
 Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibilty for any damage caused by this library.
 
   [joelvardy]: https://joelvardy.com/
