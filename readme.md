@@ -114,6 +114,18 @@ if ( ! $user_id) {
 }
 ```
 
+### Change Password
+
+The example below shows how to change a password:
+
+```php
+$auth = new Joelvardy\Authentication();
+
+if ($auth->change_password($user_id, $password)) {
+	// Password changed
+}
+```
+
 Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibilty for any damage caused by this library.
 
   [joelvardy]: https://joelvardy.com/

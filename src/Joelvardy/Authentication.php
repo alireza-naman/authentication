@@ -250,14 +250,8 @@ class Authentication {
 		// Add group permission - on error return false
 		if ( ! $stmt = Database::instance()->prepare("insert into {$this->config->user_table}(`id`, `group_id`, `created`, `updated`, `{$this->config->username_field}`, `{$this->config->password_field}`) values (0, ?, ?, ?, ?, ?)")) return false;
 		$stmt->bind_param('iiiss', $group_id, $_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME'], $username, $password);
-		if ($stmt->execute()) {
-			$user_id = $stmt->insert_id;
-			$stmt->close();
-			return $user_id;
-		} else {
-			$stmt->close();
-			return false;
-		}
+		if ( ! $stmt->execute()) return false;
+		return $stmt->insert_id;
 
 	}
 
@@ -265,6 +259,7 @@ class Authentication {
 	/**
 	 * Read user account
 	 *
+	 * @param	integer [$user_id] The ID of the user to read
 	 * @return	array|boolean
 	 */
 	public function read_user($user_id) {
@@ -293,6 +288,26 @@ class Authentication {
 		Cache::store('user_'.$user_id, $user_details);
 
 		return $user_details;
+
+	}
+
+
+	/**
+	 * Change password
+	 *
+	 * @param	integer [$user_id] The ID of the user to update
+	 * @param	string [$password] The users new password
+	 * @return	integer|boolean
+	 */
+	public function change_password($user_id, $password) {
+
+		// Generate hash
+		$password = $this->generate_hash($password);
+
+		// Add group permission - on error return false
+		if ( ! $stmt = Database::instance()->prepare("update {$this->config->user_table} set `updated` = ?, `{$this->config->password_field}` = ? where `id` = ?")) return false;
+		$stmt->bind_param('isi', $_SERVER['REQUEST_TIME'], $password, $user_id);
+		return $stmt->execute();
 
 	}
 
