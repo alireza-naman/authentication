@@ -26,11 +26,15 @@ class Authentication {
 			'user_table' => 'user',
 			'username_field' => 'username',
 			'password_field' => 'password',
-			'password_cost' => 16
+			'password_cost' => 16,
+			'session_name' => 'jv_authentication'
 		), (array) clone Config::value('authentication'));
 
 		// Ensure a secret key has been set
 		if ( ! isset($this->config->secret_key)) throw new \Exception('You must define a secret key.');
+
+		// Start the users session
+		@session_start();
 
 	}
 
@@ -317,6 +321,41 @@ class Authentication {
 		if ( ! $stmt = Database::instance()->prepare("update {$this->config->user_table} set `updated` = ?, `group_id` = ? where `id` = ?")) return false;
 		$stmt->bind_param('isi', $_SERVER['REQUEST_TIME'], $group_id, $user_id);
 		return $stmt->execute();
+
+	}
+
+
+	/**
+	 * Login
+	 *
+	 * @param	string [$username] Username to check against
+	 * @param	string [$password] Password to check against
+	 * @return	integer|boolean
+	 */
+	public function login($username, $password) {
+
+		if ( ! $stmt = Database::instance()->prepare("select `id`, `password` from {$this->config->user_table} where {$this->config->username_field} = ?")) return false;
+		$stmt->bind_param('s', $username);
+		$stmt->execute();
+		$stmt->bind_result($user_id, $database_password);
+
+		// No user exists with that username
+		if ( ! $stmt->fetch()) return false;
+
+		$stmt->close();
+
+		// The password is incorrect
+		if ($this->generate_hash($password, $database_password) != $database_password) return false;
+
+		// Store data in the users session
+		$_SESSION[$this->config->session_name] = array(
+			'status' => true,
+			'logged_in' => $_SERVER['REQUEST_TIME'],
+			'user_id' => $user_id,
+			'fingerprint' => $this->fingerprint()
+		);
+
+		return true;
 
 	}
 

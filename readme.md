@@ -132,6 +132,20 @@ When you call this method the `updated` field in the user table will be updated.
 
 If you want to change the group a user belongs to you can use the `change_group($user_id, $group_id)` method. When you call this the `updated` field in the user table will also be updated.
 
+### Login
+
+An example showing how to log a user in is show below:
+
+```php
+$auth = new Joelvardy\Authentication();
+
+if ($auth->login($username, $password)) {
+	// Successfully logged in
+}
+```
+
+you should probably implement some bruteforce protection, for example, if a user enters the password wrong four times, they are locked out for 10 minutes.
+
 Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibilty for any damage caused by this library.
 
   [joelvardy]: https://joelvardy.com/
