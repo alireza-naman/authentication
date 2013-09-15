@@ -394,4 +394,31 @@ class Authentication {
 	}
 
 
+	/**
+	 * Login
+	 *
+	 * @param	string [$permission] Check the current user has this permission
+	 * @return	boolean
+	 */
+	public function permission($permission) {
+
+		// Check the user is logged in first
+		if ( ! $this->logged_in()) return false;
+
+		// Read user data
+		$user_id = $_SESSION[$this->config->session_name]['user_id'];
+		$user_details = $this->read_user($user_id);
+
+		// Iterate through user permissions
+		foreach ($user_details['group']['permissions'] as $user_permission) {
+			if ($permission == $user_permission['key']) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+
 }

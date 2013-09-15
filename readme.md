@@ -144,13 +144,25 @@ if ($auth->login($username, $password)) {
 }
 ```
 
+*You should probably implement some bruteforce protection, for example, if a user enters the password wrong four times, they are locked out for 10 minutes.*
+
 ### Log In/Out
 
 To check a user is logged in just run `$auth->logged_in()` it will return either true or false.
 
 To log the current user out just run: `$auth->logout()`
 
-you should probably implement some bruteforce protection, for example, if a user enters the password wrong four times, they are locked out for 10 minutes.
+### Check User Permissions
+
+You can easily check whether a user has a permission listed in the `user_permission` table, the example below shows this:
+
+```php
+$auth = new Joelvardy\Authentication();
+
+if ($auth->permission('moderate-comments')) {
+	// This user can moderate comments
+}
+```
 
 Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibilty for any damage caused by this library.
 
