@@ -192,4 +192,42 @@ class Authentication {
 	}
 
 
+	/**
+	 * Generate salt
+	 *
+	 * @access	protected
+	 * @param	integer [$cost] The strength of the resulting hash, must be within the range 04-31
+	 * @return	string
+	 */
+	protected function generate_salt($cost = 16)
+	{
+
+		// We are using blowfish, so this must be set at the beginning of the salt
+		$salt = '$2a$'.$cost.'$';
+
+		// Generate a random string based on time
+		$salt .= substr(str_replace('+', '.', base64_encode(sha1(microtime(TRUE), TRUE))), 0, 22);
+
+		return $salt.'$';
+
+	}
+
+
+	/**
+	 * Generate a hash
+	 *
+	 * @access	protected
+	 * @param	string [$password] The password for which the hash should be generated for
+	 * @param	string [$salt] The salt can either be the one returned from the generate_salt method or the current password
+	 * @return	string The generated hash
+	 */
+	protected function generate_hash($password, $salt)
+	{
+
+		// Hash the generated details with a salt to form a secure password hash
+		return crypt($password, $salt);
+
+	}
+
+
 }
