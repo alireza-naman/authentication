@@ -21,6 +21,9 @@ class Authentication {
 	 */
 	public function __construct() {
 
+		// Ensure configuration has been defined
+		if ( ! Config::value('authentication')) throw new \Exception('You must define configuration for the authentication library.');
+
 		// Set configuration
 		$this->config = (object) array_merge(array(
 			'user_table' => 'user',
