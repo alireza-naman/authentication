@@ -26,6 +26,20 @@ Joelvardy\Config::value('authentication', (object) array(
 ));
 ```
 
+#### Database
+
+This library also makes use of my [database connection library][database-library] for managing database connections. You will need to define your database details as shown below:
+
+```php
+// Define database details
+Joelvardy\Config::value('database', (object) array(
+    'host' => 'localhost',
+    'username' => 'joelvardy',
+    'password' => 'CHANGEME',
+    'name' => 'projectx'
+));
+```
+
 ### Caching
 
 The library uses this [caching library][cache], although you don't have to use it, you can define a memcached server to use, or if you don't the library will simply query the database when required.
@@ -171,3 +185,4 @@ Carefully developed by [Joel Vardy][joelvardy], however I can't take responsibil
 
   [joelvardy]: https://joelvardy.com/
   [cache]: https://github.com/joelvardy/cache
+  [database-library]: https://github.com/joelvardy/database
