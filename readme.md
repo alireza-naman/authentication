@@ -165,6 +165,8 @@ if ($auth->login($username, $password)) {
 
 To check a user is logged in just run `$auth->logged_in()` it will return either true or false.
 
+You can also read the logged in users ID, like so: `$auth->user_id()`
+
 ### Checking User Permissions
 
 You can easily check whether a user has a permission listed in the `user_permission` table, the example below shows this:

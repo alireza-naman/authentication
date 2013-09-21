@@ -385,6 +385,21 @@ class Authentication {
 
 
 	/**
+	 * What is the current users ID
+	 *
+	 * @return	boolean|boolean
+	 */
+	public function user_id() {
+
+		// Check the user is logged in first
+		if ( ! $this->logged_in()) return false;
+
+		return (integer) $_SESSION[$this->config->session_name]['user_id'];
+
+	}
+
+
+	/**
 	 * Log the current user out
 	 *
 	 * @return	void
@@ -398,7 +413,7 @@ class Authentication {
 
 
 	/**
-	 * Login
+	 * Does the user have a permission
 	 *
 	 * @param	string [$permission] Check the current user has this permission
 	 * @return	boolean
@@ -409,8 +424,7 @@ class Authentication {
 		if ( ! $this->logged_in()) return false;
 
 		// Read user data
-		$user_id = $_SESSION[$this->config->session_name]['user_id'];
-		$user_details = $this->read_user($user_id);
+		$user_details = $this->read_user($this->user_id());
 
 		// Iterate through user permissions
 		foreach ($user_details['group']['permissions'] as $user_permission) {
