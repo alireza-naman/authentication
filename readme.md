@@ -2,6 +2,14 @@
 
 An authentication library which provides permission based access control and requires minimal setup.
 
+## Installation
+
+Add the following to your `composer.json` require object:
+
+```json
+"joelvardy/authentication": "dev-master"
+```
+
 ## Usage
 
 ### Configuration
